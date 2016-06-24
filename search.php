@@ -17,6 +17,13 @@
 require_once("../common/common.php");//共通ファイル読み込み(使用する前に、appidを指定してください。)
 require_once("../util/scriptUtil.php");
 require_once("../util/defineUtil.php");
+session_start();
+$login_now = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
+$user_name = isset($_SESSION['name']) ? $_SESSION['name'] : null;
+
+//if(!isset($login_now)){
+  //$login_now = null;
+//}
 
 $hits = array();
 $query = !empty($_GET["query"]) ? $_GET["query"] : ""; //$query=検索ワード
@@ -83,7 +90,7 @@ if ($query != "") {//検索ワードが入っているなら
           ?>
 
           <br><br><br><br><br><br><br>
-          <?php echo login(); ?>
+          <?php var_dump($user_name);echo login_now($login_now); ?>
           <div>
             <a href="#header">トップへ戻る</a>
           </div>

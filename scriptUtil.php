@@ -1,9 +1,7 @@
 <?php
 //共通処理
 //topに戻る
-if(!isset($_SESSION)){
-session_start();
-}
+
 require_once('../util/defineUtil.php');
 require_once("../common/common.php");//共通ファイル読み込み
 
@@ -18,6 +16,10 @@ function return_seach(){//商品検索へ移動
 
 function item(){//使いません
     return "<a href='".ITEM."'>";
+}
+
+function goto_cart(){//カート
+    return "<a href='".CART."'>カート</a>";
 }
 
 
@@ -56,26 +58,44 @@ if(!empty($_POST[$name])){
       }
   }
 function login(){//ログインボタン
-
-  $_SESSION['url'] = ($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);//現在のurlを保存する
+  //現在のurlを保存する
+  $redirectUrl = 'http://'.($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
   return "
     <form action='login.php' method='post'>
     <input type='submit' name='login' value='ログイン'>
-    <input type='hidden' name='redirect' value=!".$_SESSION['url'].">
+    <input type='hidden' name='redirect' value=".$redirectUrl.">
     </from>";
   }
 
-function push_return(){//ログイン成功で元のページに戻るリンク
-    $redirect=$_SESSION['url']?$_SESSION['url']:'';
-  var_dump($redirect);
-    if(!empty($redirect)){//ログインボタンが押されている
-       //$_SESSION['url'] = $redirecto;//元のページのurlをセッションに保存
-       return "<a href=".$redirect.">戻る</a>";
+function push_return($redirectUrl = ''){//ログイン成功で元のページに戻るリンク
+    if (!$redirectUrl) {
+      return;
     }
-  }
 
-function login_2(){
-  $_SESSION['url'] = ($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);//現在のurlを保存する
+    return "<a href=".$redirectUrl.">戻る</a>";
+}
+
+function login_2($redirectUrl){
+    $redirectUrl = $_POST['redirect']?$_POST['redirect']:'';
     header("Location: {$redirect}");
 exit;
+}
+
+function login_now($login_now = null){//ログイン状態によって表示を変える
+  if (!$login_now){
+    return login();
+  }
+ global $user_name;
+  return logout().account($user_name).goto_cart();
+}
+
+function logout(){
+  return "<form action='top.php'>
+          <input type='submit' name='logout' value='ログアウト'>
+          <input type='hidden' name='session_destroy' value=".session_destroy().">
+          </form>";
+      }
+
+function account($name){
+  return "ようこそ<a href='".MYDATA."'>".$name."</a>さん！";
 }

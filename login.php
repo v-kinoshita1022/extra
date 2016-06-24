@@ -5,8 +5,10 @@ require_once("../util/scriptUtil.php");
 //print($_SERVER["REQUEST_URI"]);
 
 session_start();
-$name= $_POST["name"]?$_POST['name']:null;
-$password= $_POST["password"]?$_POST['password']:null;
+
+$name = isset($_POST["name"]) ? $_POST['name'] : null;
+$password = isset($_POST["password"]) ? $_POST['password'] : null;
+$redirectUrl = isset($_POST["redirect"]) ? $_POST['redirect'] : null;
  ?>
 
 <!DOCTYPE html>
@@ -22,19 +24,21 @@ $password= $_POST["password"]?$_POST['password']:null;
   <form action="login.php" method="post">
    ユーザーネーム<input type="text" name="name" value="<?php echo $name; ?>">
    パスワード<input type="text" name="password" value="<?php echo $password; ?>">
+   <input type='hidden' name='redirect' value="<?php echo $redirectUrl; ?>">
    <br><br>
 
    <?php if(!empty($name && $password)){//ユーザー名とパスが入力されているならDBでand検索
 
       $login = login_search($name,$password);//DBアクセス　ユーザー検索結果
-      //var_dump($login);
 
           if(isset($login)){//検索結果がtrueならユーザー名とIDをセッションに保存
              echo 'ログインに成功しました。';
               $_SESSION['name'] = $login[0]['name'];
               $_SESSION['userID'] = $login[0]['userID'];
+              $login_now = $_SESSION['userID'];
+              var_dump($_SESSION['userID']);
 
-              echo push_return();
+              echo push_return($redirectUrl);
           }else{
             echo '入力が正しくありません';
           }
